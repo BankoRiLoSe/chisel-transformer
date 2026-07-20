@@ -1,0 +1,5 @@
+//> using scala "2.13.12"
+//> using dep "org.chipsalliance::chisel:6.7.0"
+//> using plugin "org.chipsalliance:::chisel-plugin:6.7.0"
+//> using test.dep "edu.berkeley.cs::chiseltest:6.0.0"
+//> using test.dep "org.scalatest::scalatest:3.2.18"
