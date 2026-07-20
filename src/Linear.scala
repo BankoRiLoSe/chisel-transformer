@@ -1,15 +1,16 @@
 import chisel3._
 
-class Linear4x2 extends Module {
+class Linear(inFeatures: Int, outFeatures: Int) extends Module {
+
   val io = IO(new Bundle {
-    val x = Input(Vec(4, SInt(16.W)))
-    val w = Input(Vec(2, Vec(4, SInt(16.W))))
-    val bias = Input(Vec(2, SInt(32.W)))
-    val y = Output(Vec(2, SInt(32.W)))
+    val x = Input(Vec(inFeatures, SInt(16.W)))
+    val w = Input(Vec(outFeatures, Vec(inFeatures, SInt(16.W))))
+    val bias = Input(Vec(outFeatures, SInt(32.W)))
+    val y = Output(Vec(outFeatures, SInt(32.W)))
   })
-  for (j <- 0 until 2) {
-    val products = Wire(Vec(4, SInt(32.W)))
-    for (i <- 0 until 4) {
+  for (j <- 0 until outFeatures) {
+    val products = Wire(Vec(inFeatures, SInt(32.W)))
+    for (i <- 0 until inFeatures) {
       products(i) := io.x(i) * io.w(j)(i)
     }
     io.y(j) := products.reduce(_ + _) + io.bias(j)
