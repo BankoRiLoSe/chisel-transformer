@@ -71,4 +71,35 @@ class LinearTest extends AnyFlatSpec with ChiselScalatestTester {
       c.io.y(0).expect((-22).S)
     }
   }
+
+  it should "requantize accumulated outputs" in {
+    test(new Linear(3, 1, 8, 32, 16, 2)) { c =>
+      c.io.x(0).poke(10.S)
+      c.io.x(1).poke(20.S)
+      c.io.x(2).poke(30.S)
+
+      c.io.w(0)(0).poke(2.S)
+      c.io.w(0)(1).poke(3.S)
+      c.io.w(0)(2).poke(4.S)
+
+      c.io.bias(0).poke(0.S)
+
+      c.io.y(0).expect(50.S)
+    }
+  }
+  it should "saturate requantized outputs" in {
+    test(new Linear(3, 1, 8, 32, 8, 0)) { c =>
+      c.io.x(0).poke(100.S)
+      c.io.x(1).poke(100.S)
+      c.io.x(2).poke(100.S)
+
+      c.io.w(0)(0).poke(2.S)
+      c.io.w(0)(1).poke(2.S)
+      c.io.w(0)(2).poke(2.S)
+
+      c.io.bias(0).poke(0.S)
+
+      c.io.y(0).expect(127.S)
+    }
+  }
 }
