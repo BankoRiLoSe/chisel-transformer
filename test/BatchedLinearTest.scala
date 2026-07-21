@@ -31,4 +31,38 @@ class BatchedLinearTest extends AnyFlatSpec with ChiselScalatestTester {
       c.io.y(1)(1).expect(32.S)
     }
   }
+  it should "add bias to each token output" in {
+    test(new BatchedLinear(2, 2, 1, 8, 32, 16, 0)) { c =>
+      c.io.x(0)(0).poke(1.S)
+      c.io.x(0)(1).poke(2.S)
+
+      c.io.x(1)(0).poke(3.S)
+      c.io.x(1)(1).poke(4.S)
+
+      c.io.w(0)(0).poke(1.S)
+      c.io.w(0)(1).poke(1.S)
+
+      c.io.bias(0).poke(10.S)
+
+      c.io.y(0)(0).expect(13.S)
+      c.io.y(1)(0).expect(17.S)
+    }
+  }
+  it should "requantize and saturate each token output" in {
+    test(new BatchedLinear(2, 2, 1, 8, 32, 8, 1)) { c =>
+      c.io.x(0)(0).poke(100.S)
+      c.io.x(0)(1).poke(100.S)
+
+      c.io.x(1)(0).poke(10.S)
+      c.io.x(1)(1).poke(20.S)
+
+      c.io.w(0)(0).poke(2.S)
+      c.io.w(0)(1).poke(2.S)
+
+      c.io.bias(0).poke(0.S)
+
+      c.io.y(0)(0).expect(127.S)
+      c.io.y(1)(0).expect(30.S)
+    }
+  }
 }
